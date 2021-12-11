@@ -2,15 +2,21 @@ const { body, validationResult } = require("express-validator");
 
 const registerValidator = async (req, res, next) => {
   const validations = [
-    body("username").isLength({ min: 8 }).isAlpha(),
-    body("email").isEmail(),
-    body("password").isStrongPassword({
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 0,
-    }),
+    body("username")
+      .isLength({ min: 8 })
+      .withMessage("must be at least 8 chars long")
+      .isAlpha()
+      .withMessage("username should contain letters only"),
+    body("email").isEmail().withMessage("Please enter a valid email adress"),
+    body("password")
+      .isStrongPassword({
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 0,
+      })
+      .withMessage("min. 8 chars, min. 1 uppercase, min. 1 number"),
     body("userStatus").isIn(["admin", "user"]),
   ];
 
