@@ -36,7 +36,7 @@ const register = async (req, res) => {
       });
     }
   } catch (err) {
-    throw new Error("Failed creating new user");
+    next(err);
   }
 };
 
@@ -51,6 +51,7 @@ const login = async (req, res) => {
       if (await bcrypt.compare(password, user.password)) {
         const token = jwt.sign(
           {
+            id: user._id,
             username: user.username,
             email: user.email,
             role: user.role,
@@ -61,6 +62,7 @@ const login = async (req, res) => {
           }
         );
         res.status(200).json({
+          id: user._id,
           username: user.username,
           email: user.email,
           role: user.role,
@@ -73,7 +75,7 @@ const login = async (req, res) => {
       res.status(400).send("Please check your email adress");
     }
   } catch (err) {
-    throw new Error("Failed logging in");
+    next(err);
   }
 };
 

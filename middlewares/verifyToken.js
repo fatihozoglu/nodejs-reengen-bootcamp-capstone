@@ -9,6 +9,7 @@ const verifyToken = (req, res, next) => {
     try {
       const verifiedToken = jwt.verify(token, process.env.TOKEN_KEY);
       req.user = verifiedToken;
+      next();
     } catch (err) {
       res
         .status(401)
@@ -17,7 +18,6 @@ const verifyToken = (req, res, next) => {
         );
     }
   }
-  next();
 };
 
 module.exports = verifyToken;
