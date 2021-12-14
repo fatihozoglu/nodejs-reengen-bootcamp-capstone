@@ -4,40 +4,37 @@ const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
   try {
-    const { username, email, password, userStatus } = req.body;
+    const { username, email, password, role } = req.body;
 
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      res.status(409).send("User Already Exist. Please Login");
-    }
+      res.status(400).send("User Already Exist. Please Login");
+    } else {
+      const encryptedPassword = await bcrypt.hash(password, 10);
 
-    const encryptedPassword = await bcrypt.hash(password, 10);
+      const user = new User({
+        username,
+        email,
+        password: encryptedPassword,
+        role,
+      });
 
-    const user = new User({
-      username,
-      email,
-      password: encryptedPassword,
-      userStatus,
-    });
-
-    const token = jwt.sign(
-      { username, email, userStatus },
-      process.env.TOKEN_KEY,
-      {
+      const token = jwt.sign({ username, email, role }, process.env.TOKEN_KEY, {
         expiresIn: "1h",
-      }
-    );
+      });
 
-    user.save();
+      user.save();
 
-    // return new user
-    res.status(201).json({
-      username: user.username,
-      email: user.email,
-      userStatus: user.userStatus,
-      token: token,
-    });
+      // return new user
+      res.status(201).json({
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        token: token,
+      });
+    }
   } catch (err) {
     throw new Error("Failed creating new user");
   }
@@ -56,7 +53,7 @@ const login = async (req, res) => {
           {
             username: user.username,
             email: user.email,
-            userStatus: user.userStatus,
+            role: user.role,
           },
           process.env.TOKEN_KEY,
           {
@@ -66,7 +63,7 @@ const login = async (req, res) => {
         res.status(200).json({
           username: user.username,
           email: user.email,
-          userStatus: user.userStatus,
+          role: user.role,
           token: token,
         });
       } else {

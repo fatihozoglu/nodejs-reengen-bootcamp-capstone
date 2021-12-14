@@ -17,7 +17,7 @@ const registerValidator = async (req, res, next) => {
         minSymbols: 0,
       })
       .withMessage("min. 8 chars, min. 1 uppercase, min. 1 number"),
-    body("userStatus").isIn(["admin", "user"]),
+    body("role").isIn(["admin", "user"]),
   ];
 
   for (let validation of validations) {
@@ -26,9 +26,10 @@ const registerValidator = async (req, res, next) => {
   }
   const errors = validationResult(req);
   if (errors.isEmpty()) {
-    return next();
+    next();
+  } else {
+    res.status(400).json({ errors });
   }
-  res.status(400).send(errors);
 };
 
 module.exports = registerValidator;
