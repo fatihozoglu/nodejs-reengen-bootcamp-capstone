@@ -4,6 +4,6 @@ const verifyToken = require("../middlewares/verifyToken");
 
 router.use(verifyToken);
 // Routing for "/"
-router.get("/", unitController.getAll);
+router.get("/:id", unitController.getByFactoryId);
 
 module.exports = router;
