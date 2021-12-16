@@ -42,10 +42,10 @@ const updateById = (request, response) => {
   );
 };
 
-const deleteById = (request, response) => {
+const deleteFactoryById = (request, response) => {
   const id = parseInt(request.params.id);
 
-  pool.query("DELETE FROM factories WHERE id = $1", [id], (error, results) => {
+  pool.query("DELETE FROM factories WHERE id = $1", [id], (err, res) => {
     if (err) console.log(err);
     response.status(200).send(`Factory with ID: ${id} deleted`);
   });
@@ -56,5 +56,5 @@ module.exports = {
   createNew,
   getById,
   updateById,
-  deleteById,
+  deleteFactoryById,
 };
