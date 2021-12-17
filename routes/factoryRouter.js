@@ -5,6 +5,7 @@ const verifyToken = require("../middlewares/verifyToken");
 router.use(verifyToken);
 
 router.get("/", factoryController.getAll);
+router.get("/type", factoryController.getDataType);
 router.post("/", factoryController.createNew);
 router.put("/:id", factoryController.updateByFactoryId);
 router.delete("/:id", factoryController.deleteFactoryById);

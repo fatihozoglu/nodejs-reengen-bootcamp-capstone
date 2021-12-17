@@ -30,8 +30,33 @@ const deleteUnitsByFactoryId = (req, res) => {
   });
 };
 
+const getDataType = (req, res) => {
+  pool.query(
+    "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'units'",
+    (err, result) => {
+      if (err) console.log(err);
+      res.status(200).send(result.rows);
+    }
+  );
+};
+
+const createNew = (req, res) => {
+  pool.query(
+    `INSERT INTO units (${[
+      ...Object.keys(req.body),
+    ]}) VALUES ($1, $2, $3, $4, $5, $6)`,
+    Object.values(req.body),
+    (err, result) => {
+      if (err) console.log(err);
+      else res.status(201).send(`Unit created.`);
+    }
+  );
+};
+
 module.exports = {
   getByFactoryId,
   deleteUnitById,
   deleteUnitsByFactoryId,
+  getDataType,
+  createNew,
 };

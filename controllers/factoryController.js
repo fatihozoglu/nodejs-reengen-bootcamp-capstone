@@ -7,14 +7,25 @@ const getAll = (req, res) => {
   });
 };
 
-const createNew = (req, res) => {
-  const { name, membership_start, membership_end, population, vip } = req.body;
+const getDataType = (req, res) => {
   pool.query(
-    "INSERT INTO factories (name, membership_start, membership_end, population, vip) VALUES ($1, $2, $3, $4, $5)",
-    [name, membership_start, membership_end, population, vip],
+    "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'factories'",
     (err, result) => {
       if (err) console.log(err);
-      res.status(201).send(`Factory created.`);
+      res.status(200).send(result.rows);
+    }
+  );
+};
+
+const createNew = (req, res) => {
+  pool.query(
+    `INSERT INTO factories (${[
+      ...Object.keys(req.body),
+    ]}) VALUES ($1, $2, $3, $4, $5)`,
+    Object.values(req.body),
+    (err, result) => {
+      if (err) console.log(err);
+      else res.status(201).send(`Factory created.`);
     }
   );
 };
@@ -47,6 +58,7 @@ const deleteFactoryById = (request, response) => {
 
 module.exports = {
   getAll,
+  getDataType,
   createNew,
   updateByFactoryId,
   deleteFactoryById,
