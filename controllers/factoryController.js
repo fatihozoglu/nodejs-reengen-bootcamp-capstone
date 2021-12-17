@@ -7,14 +7,6 @@ const getAll = (req, res) => {
   });
 };
 
-const getById = (req, res) => {
-  const id = parseInt(req.params.id);
-  pool.query("SELECT * FROM factories WHERE id = $1", [id], (err, result) => {
-    if (err) console.log(err);
-    res.status(200).send(result.rows);
-  });
-};
-
 const createNew = (req, res) => {
   const { name, membership_start, membership_end, population, vip } = req.body;
   pool.query(
@@ -27,7 +19,7 @@ const createNew = (req, res) => {
   );
 };
 
-const updateById = (request, response) => {
+const updateByFactoryId = (request, response) => {
   const id = parseInt(request.params.id);
   const { name, membership_start, membership_end, population, vip } =
     request.body;
@@ -35,9 +27,11 @@ const updateById = (request, response) => {
   pool.query(
     "UPDATE factories SET name = $1, membership_start = $2, membership_end = $3, population = $4, vip = $5 WHERE id = $6",
     [name, membership_start, membership_end, population, vip, id],
-    (error, results) => {
+    (err, results) => {
       if (err) console.log(err);
-      response.status(200).send(`Factory with ID: ${id} updated`);
+      else {
+        response.status(200).send(`Factory with ID: ${id} updated`);
+      }
     }
   );
 };
@@ -54,7 +48,6 @@ const deleteFactoryById = (request, response) => {
 module.exports = {
   getAll,
   createNew,
-  getById,
-  updateById,
+  updateByFactoryId,
   deleteFactoryById,
 };
