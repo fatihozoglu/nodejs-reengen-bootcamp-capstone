@@ -18,10 +18,17 @@ const getDataType = (req, res) => {
 };
 
 const createNew = (req, res) => {
+  let columnNames = [...Object.keys(req.body)];
+  let columnNum = Object.keys(req.body).length;
+  let identifiers = [];
+  let createIdentifiers = (num) => {
+    for (let i = 1; i <= num; i++) {
+      identifiers.push(`$${i}`);
+    }
+  };
+  createIdentifiers(columnNum);
   pool.query(
-    `INSERT INTO factories (${[
-      ...Object.keys(req.body),
-    ]}) VALUES ($1, $2, $3, $4, $5)`,
+    `INSERT INTO factories (${columnNames}) VALUES (${identifiers.join(",")})`,
     Object.values(req.body),
     (err, result) => {
       if (err) console.log(err);

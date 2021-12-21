@@ -41,14 +41,22 @@ const getDataType = (req, res) => {
 };
 
 const createNew = (req, res) => {
+  let columnNames = [...Object.keys(req.body)];
+  let columnNum = Object.keys(req.body).length;
+  let placeholders = [];
+  let createIdentifiers = (num) => {
+    for (let i = 1; i <= num; i++) {
+      placeholders.push(`$${i}`);
+    }
+  };
+  createIdentifiers(columnNum);
+
   pool.query(
-    `INSERT INTO units (${[
-      ...Object.keys(req.body),
-    ]}) VALUES ($1, $2, $3, $4, $5, $6)`,
+    `INSERT INTO units (${columnNames}) VALUES (${placeholders.join(",")})`,
     Object.values(req.body),
     (err, result) => {
-      if (err) console.log(err);
-      else res.status(201).send(`Unit created.`);
+      if (err) res.status(400).send("Please fill all fields");
+      else res.status(201).send(`Factory created.`);
     }
   );
 };
