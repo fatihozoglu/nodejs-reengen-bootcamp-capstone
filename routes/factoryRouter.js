@@ -7,7 +7,7 @@ router.use(verifyToken);
 router.get("/", factoryController.getAll);
 router.get("/type", factoryController.getDataType);
 router.post("/", factoryController.createNew);
-router.put("/:id", factoryController.updateByFactoryId);
+router.put("/:id", factoryController.updateFactoryById);
 router.delete("/:id", factoryController.deleteFactoryById);
 
 module.exports = router;

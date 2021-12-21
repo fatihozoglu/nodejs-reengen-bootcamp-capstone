@@ -1,72 +1,73 @@
 const pool = require("../db_config/postgres");
 
-const getAll = (req, res) => {
-  pool.query("SELECT * FROM factories ORDER BY id ASC", (err, result) => {
-    if (err) console.log(err);
-    res.status(200).send(result.rows);
-  });
+const getDataType = (req, res) => {
+  const text =
+    "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'factories'";
+  pool
+    .query(text)
+    .then((result) => {
+      res.status(200).send(result.rows);
+    })
+    .catch((e) => res.status(500).send("Couldn't get factory data types"));
 };
 
-const getDataType = (req, res) => {
-  pool.query(
-    "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'factories'",
-    (err, result) => {
-      if (err) console.log(err);
+const getAll = (req, res) => {
+  const text = "SELECT * FROM factories ORDER BY id ASC";
+  pool
+    .query(text)
+    .then((result) => {
       res.status(200).send(result.rows);
-    }
-  );
+    })
+    .catch((e) => res.status(500).send("Couldn't get the factory list"));
 };
 
 const createNew = (req, res) => {
-  let columnNames = [...Object.keys(req.body)];
-  let columnNum = Object.keys(req.body).length;
-  let identifiers = [];
-  let createIdentifiers = (num) => {
-    for (let i = 1; i <= num; i++) {
-      identifiers.push(`$${i}`);
-    }
-  };
-  createIdentifiers(columnNum);
-  pool.query(
-    `INSERT INTO factories (${columnNames}) VALUES (${identifiers.join(",")})`,
-    Object.values(req.body),
-    (err, result) => {
-      if (err) console.log(err);
-      else res.status(201).send(`Factory created.`);
-    }
-  );
+  let keys = Object.keys(req.body);
+  let placeholders = keys.map((item, index) => `$${index + 1}`);
+
+  const text = `INSERT INTO factories (${keys}) VALUES (${placeholders})`;
+  const values = Object.values(req.body);
+
+  pool
+    .query(text, values)
+    .then((result) => res.status(201).send("Factory created"))
+    .catch((err) => res.status(500).send("Couldn't create factory"));
 };
 
-const updateByFactoryId = (request, response) => {
-  const id = parseInt(request.params.id);
-  const { name, membership_start, membership_end, population, vip } =
-    request.body;
+const updateFactoryById = (req, res) => {
+  const id = parseInt(req.params.id);
+  let keys = Object.keys(req.body);
+  let keysWithPlaceholders = keys
+    .map((item, index) => `${item} = $${index + 1}`)
+    .join(",");
 
-  pool.query(
-    "UPDATE factories SET name = $1, membership_start = $2, membership_end = $3, population = $4, vip = $5 WHERE id = $6",
-    [name, membership_start, membership_end, population, vip, id],
-    (err, results) => {
-      if (err) console.log(err);
-      else {
-        response.status(200).send(`Factory with ID: ${id} updated`);
-      }
-    }
-  );
+  const text = `UPDATE factories SET ${keysWithPlaceholders} WHERE id = $6`;
+  const values = Object.values(req.body);
+
+  pool
+    .query(text, values)
+    .then((result) => res.status(200).send(`Factory with ${id} updated`))
+    .catch((e) => res.status(500).send("Couldn't update the factory data"));
 };
 
-const deleteFactoryById = (request, response) => {
-  const id = parseInt(request.params.id);
+const deleteFactoryById = (req, res) => {
+  const id = parseInt(req.params.id);
 
-  pool.query("DELETE FROM factories WHERE id = $1", [id], (err, res) => {
-    if (err) console.log(err);
-    response.status(200).send(`Factory with ID: ${id} deleted`);
-  });
+  const text = "DELETE FROM factories WHERE id = $1";
+  const values = [id];
+
+  pool
+    .query(text, values)
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((e) => res.status(500).send("Couldn't delete the factory data"));
 };
 
 module.exports = {
-  getAll,
   getDataType,
+  getAll,
   createNew,
-  updateByFactoryId,
+  updateFactoryById,
   deleteFactoryById,
 };
