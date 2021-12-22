@@ -2,13 +2,15 @@ const pool = require("../db_config/postgres");
 
 const getDataType = (req, res) => {
   const text =
-    "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'factories'";
+    "SELECT column_name, data_type, ordinal_position FROM information_schema.columns WHERE table_name = 'factories'";
   pool
     .query(text)
     .then((result) => {
       res.status(200).send(result.rows);
     })
-    .catch((e) => res.status(500).send("Couldn't get factory data types"));
+    .catch((e) =>
+      res.status(500).send("An error occured while getting factory data types")
+    );
 };
 
 const getAll = (req, res) => {
@@ -18,10 +20,12 @@ const getAll = (req, res) => {
     .then((result) => {
       res.status(200).send(result.rows);
     })
-    .catch((e) => res.status(500).send("Couldn't get the factory list"));
+    .catch((e) =>
+      res.status(500).send("An error occured while getting the factory list")
+    );
 };
 
-const createNew = (req, res) => {
+const create = (req, res) => {
   let keys = Object.keys(req.body);
   let placeholders = keys.map((item, index) => `$${index + 1}`);
 
@@ -31,10 +35,12 @@ const createNew = (req, res) => {
   pool
     .query(text, values)
     .then((result) => res.status(201).send("Factory created"))
-    .catch((err) => res.status(500).send("Couldn't create factory"));
+    .catch((err) =>
+      res.status(500).send("An error occured while creating the new factory")
+    );
 };
 
-const updateFactoryById = (req, res) => {
+const updateById = (req, res) => {
   const id = parseInt(req.params.id);
   let keys = Object.keys(req.body);
   let keysWithPlaceholders = keys
@@ -47,10 +53,12 @@ const updateFactoryById = (req, res) => {
   pool
     .query(text, values)
     .then((result) => res.status(200).send(`Factory with ${id} updated`))
-    .catch((e) => res.status(500).send("Couldn't update the factory data"));
+    .catch((e) =>
+      res.status(500).send("An error occured while updating the factory data")
+    );
 };
 
-const deleteFactoryById = (req, res) => {
+const deleteById = (req, res) => {
   const id = parseInt(req.params.id);
 
   const text = "DELETE FROM factories WHERE id = $1";
@@ -61,13 +69,31 @@ const deleteFactoryById = (req, res) => {
     .then((result) => {
       res.status(200).send(result);
     })
-    .catch((e) => res.status(500).send("Couldn't delete the factory data"));
+    .catch((e) =>
+      res.status(500).send("An error occured while deleting the factory data")
+    );
+};
+
+const createNewColumn = (req, res) => {
+  const { name, dataType } = req.body;
+
+  const text = `ALTER TABLE factories ADD COLUMN ${name} ${dataType}`;
+
+  pool
+    .query(text)
+    .then((result) => {
+      res.status(201).send(result);
+    })
+    .catch((err) =>
+      res.status(500).send("An error occured while creating the new column")
+    );
 };
 
 module.exports = {
   getDataType,
   getAll,
-  createNew,
-  updateFactoryById,
-  deleteFactoryById,
+  create,
+  updateById,
+  deleteById,
+  createNewColumn,
 };

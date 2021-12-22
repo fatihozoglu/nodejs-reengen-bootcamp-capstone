@@ -6,8 +6,9 @@ router.use(verifyToken);
 
 router.get("/", factoryController.getAll);
 router.get("/type", factoryController.getDataType);
-router.post("/", factoryController.createNew);
-router.put("/:id", factoryController.updateFactoryById);
-router.delete("/:id", factoryController.deleteFactoryById);
+router.post("/", factoryController.create);
+router.post("/new-column", factoryController.createNewColumn);
+router.put("/:id", factoryController.updateById);
+router.delete("/:id", factoryController.deleteById);
 
 module.exports = router;

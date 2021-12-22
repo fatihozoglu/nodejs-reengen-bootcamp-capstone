@@ -2,14 +2,16 @@ const pool = require("../db_config/postgres");
 
 const getDataType = (req, res) => {
   const text =
-    "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'units'";
+    "SELECT column_name, data_type, ordinal_position FROM information_schema.columns WHERE table_name = 'units'";
   pool
     .query(text)
     .then((result) => res.status(200).send(result.rows))
-    .catch((err) => res.status(500).send("Couldn't get units data types"));
+    .catch((err) =>
+      res.status(500).send("An error occured while getting units' data types")
+    );
 };
 
-const createNew = (req, res) => {
+const create = (req, res) => {
   let keys = Object.keys(req.body);
   let placeholders = keys.map((item, index) => `$${index + 1}`);
 
@@ -19,7 +21,9 @@ const createNew = (req, res) => {
   pool
     .query(text, values)
     .then((result) => res.status(201).send("Unit created"))
-    .catch((err) => res.status(500).send("Couldn't create unit"));
+    .catch((err) =>
+      res.status(500).send("An error occured while creating new unit")
+    );
 };
 
 const getByFactoryId = (req, res) => {
@@ -30,10 +34,12 @@ const getByFactoryId = (req, res) => {
   pool
     .query(text, values)
     .then((result) => res.status(200).send(result.rows))
-    .catch((err) => res.status(500).send("Couldn't get units data"));
+    .catch((err) =>
+      res.status(500).send("An error occured while getting units")
+    );
 };
 
-const deleteUnitById = (req, res) => {
+const deleteById = (req, res) => {
   const id = parseInt(req.params.id);
   const text = "DELETE FROM units WHERE unit_id = $1";
   const values = [id];
@@ -41,7 +47,9 @@ const deleteUnitById = (req, res) => {
   pool
     .query(text, values)
     .then((result) => res.status(200).send(`Unit with id ${id} is deleted`))
-    .catch((err) => res.status(500).send("Couldn't delete the unit"));
+    .catch((err) =>
+      res.status(500).send("An error occured while deleting the unit")
+    );
 };
 
 const deleteUnitsByFactoryId = (req, res) => {
@@ -54,13 +62,31 @@ const deleteUnitsByFactoryId = (req, res) => {
     .then((result) => {
       res.status(200).send(`Units belongs to factory with id ${id} deleted`);
     })
-    .catch((err) => res.status(500).send("Couldn't delete units"));
+    .catch((err) =>
+      res.status(500).send("An error occured while deleting units")
+    );
+};
+
+const createNewColumn = (req, res) => {
+  const { name, dataType } = req.body;
+
+  const text = `ALTER TABLE units ADD COLUMN ${name} ${dataType}`;
+
+  pool
+    .query(text)
+    .then((result) => {
+      res.status(201).send(result);
+    })
+    .catch((err) =>
+      res.status(500).send("An error occured while creating the new column")
+    );
 };
 
 module.exports = {
-  createNew,
+  create,
   getDataType,
   getByFactoryId,
-  deleteUnitById,
+  deleteById,
   deleteUnitsByFactoryId,
+  createNewColumn,
 };
