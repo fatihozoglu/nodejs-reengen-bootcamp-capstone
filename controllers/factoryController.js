@@ -47,7 +47,7 @@ const updateById = (req, res) => {
     .map((item, index) => `${item} = $${index + 1}`)
     .join(",");
 
-  const text = `UPDATE factories SET ${keysWithPlaceholders} WHERE id = $6`;
+  const text = `UPDATE factories SET ${keysWithPlaceholders} WHERE id = ${id}`;
   const values = Object.values(req.body);
 
   pool
@@ -89,6 +89,20 @@ const createNewColumn = (req, res) => {
     );
 };
 
+const deleteColumn = (req, res) => {
+  const { name } = req.body;
+  const text = `ALTER TABLE factories DROP COLUMN ${name}`;
+
+  pool
+    .query(text)
+    .then((result) => {
+      res.status(201).send(result);
+    })
+    .catch((err) =>
+      res.status(500).send("An error occured while deleting the column")
+    );
+};
+
 module.exports = {
   getDataType,
   getAll,
@@ -96,4 +110,5 @@ module.exports = {
   updateById,
   deleteById,
   createNewColumn,
+  deleteColumn,
 };

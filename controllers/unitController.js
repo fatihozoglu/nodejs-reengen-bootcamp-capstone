@@ -82,6 +82,38 @@ const createNewColumn = (req, res) => {
     );
 };
 
+const deleteColumn = (req, res) => {
+  const { name } = req.body;
+  const text = `ALTER TABLE units DROP COLUMN ${name}`;
+
+  pool
+    .query(text)
+    .then((result) => {
+      res.status(201).send(result);
+    })
+    .catch((err) =>
+      res.status(500).send("An error occured while deleting the column")
+    );
+};
+
+const updateById = (req, res) => {
+  const id = parseInt(req.params.id);
+  let keys = Object.keys(req.body);
+  let keysWithPlaceholders = keys
+    .map((item, index) => `${item} = $${index + 1}`)
+    .join(",");
+
+  const text = `UPDATE units SET ${keysWithPlaceholders} WHERE id = ${id}`;
+  const values = Object.values(req.body);
+
+  pool
+    .query(text, values)
+    .then((result) => res.status(200).send(`Factory with ${id} updated`))
+    .catch((e) =>
+      res.status(500).send("An error occured while updating the unit data")
+    );
+};
+
 module.exports = {
   create,
   getDataType,
@@ -89,4 +121,6 @@ module.exports = {
   deleteById,
   deleteUnitsByFactoryId,
   createNewColumn,
+  deleteColumn,
+  updateById,
 };
