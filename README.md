@@ -14,7 +14,7 @@ This project is built with:
 - Databases:
   - [Mongodb](https://www.mongodb.com/)
   - [PostgreSQL](https://www.postgresql.org/)
-- NodeJs ORM for Mongodb: [MongooseJs](https://mongoosejs.com/)
+- NodeJs ODM for Mongodb: [MongooseJs](https://mongoosejs.com/)
 - For interacting with PostgreSQL: [Node Postgres](https://node-postgres.com/)
 - Deployment: [Heroku](https://www.heroku.com/)
 
