@@ -90,7 +90,7 @@ const createNewColumn = (req, res) => {
 };
 
 const deleteColumn = (req, res) => {
-  const { name } = req.body;
+  const name = req.params.name;
   const text = `ALTER TABLE factories DROP COLUMN ${name}`;
 
   pool

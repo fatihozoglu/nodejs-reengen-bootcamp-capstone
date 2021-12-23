@@ -10,6 +10,6 @@ router.post("/", factoryController.create);
 router.post("/column/new", factoryController.createNewColumn);
 router.put("/:id", factoryController.updateById);
 router.delete("/:id", factoryController.deleteById);
-router.delete("/column/delete", factoryController.deleteColumn);
+router.delete("/column/delete/:name", factoryController.deleteColumn);
 
 module.exports = router;
