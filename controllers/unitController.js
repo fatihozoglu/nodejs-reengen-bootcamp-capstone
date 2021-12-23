@@ -103,7 +103,7 @@ const updateById = (req, res) => {
     .map((item, index) => `${item} = $${index + 1}`)
     .join(",");
 
-  const text = `UPDATE units SET ${keysWithPlaceholders} WHERE id = ${id}`;
+  const text = `UPDATE units SET ${keysWithPlaceholders} WHERE unit_id = ${id}`;
   const values = Object.values(req.body);
 
   pool
