@@ -4,6 +4,8 @@ This is the Backend part of the Full Stack Capstone Project for Reengen Full Sta
 
 You can see the [live demo here.](https://fozoglu-reengen-capstone-app.surge.sh/)
 
+TODO: Routes will be rearranged in accordance with REST principles.
+
 This project is built with:
 
 - Javascript Runtime Environment: [NodeJs](https://nodejs.org/en/)
